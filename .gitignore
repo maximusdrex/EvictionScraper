@@ -1,0 +1,7 @@
+*.log
+*.html
+*.js
+__pycache__/
+Search Results_files/
+chromedriver.exe
+*.txt

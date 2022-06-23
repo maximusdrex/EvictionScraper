@@ -178,6 +178,13 @@ class Scraper:
                 "StatusDate":CasesRaw["CaseInformation"]["CaseStatuses"][0]["StatusDate"],
                 "FileDate":CasesRaw["CaseSummaryHeader"]["FiledOn"]
                 }
+        try:
+            Case["DispositionDate"] = CasesRaw["DispositionInformation"]["Dispositions"][0]["DispositionDate"]
+            Case["Disposition"] = CasesRaw["DispositionInformation"]["Dispositions"][0]["DispositionTypeId"]["Description"]
+        except:
+            Case["DispositionDate"] = None
+            Case["Disposition"] = None
+
 
         if(self.debug_level>2):
             f = open("{}.log".format(Case["Number"]), "w+")

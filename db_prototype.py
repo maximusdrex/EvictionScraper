@@ -42,7 +42,9 @@ class EvictDBManager:
                         file_date date,
                         case_status VARCHAR(80),
                         status_date date,
-                        type VARCHAR(80)
+                        type VARCHAR(80),
+                        disp VARCHAR(120),
+                        disp_date date
                         );
                     """)
             except psycopg.errors.DuplicateTable as E:
@@ -129,8 +131,51 @@ class EvictDBManager:
                         type VARCHAR(80)
                         );
                     """)
-
+            self.create_views()
             conn.commit()
+
+    def create_views(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                CREATE OR REPLACE VIEW properties AS SELECT DISTINCT addresses.case_id,
+                    addresses.address,
+                    addresses.city,
+                    addresses.zip
+                FROM addresses
+                WHERE addresses.type::text = 'Property Address'::text;
+
+                CREATE OR REPLACE VIEW case_properties AS SELECT cases.case_id,
+                    cases.case_num,
+                    cases.file_date,
+                    cases.case_status,
+                    cases.type,
+                    cases.status_date,
+                    properties.address,
+                    properties.city,
+                    properties.zip,
+                    cases.case_name
+                FROM cases
+                    LEFT JOIN properties ON cases.case_id = properties.case_id;
+
+                CREATE OR REPLACE VIEW move_outs AS  SELECT DISTINCT events.case_id,
+                    events.description
+                FROM events
+                WHERE events.description::text ~~ '%Move Out Scheduled%'::text;
+
+                CREATE OR REPLACE VIEW output_data AS SELECT case_properties.case_id,
+                    case_properties.case_num,
+                    case_properties.file_date,
+                    case_properties.case_status,
+                    case_properties.type,
+                    case_properties.status_date,
+                    case_properties.address,
+                    case_properties.city,
+                    case_properties.zip,
+                    move_outs.description,
+                    case_properties.case_name
+                FROM case_properties
+                    LEFT JOIN move_outs ON case_properties.case_id = move_outs.case_id;""")
+                    
 
     def add_search(self, case):
         with self.conn.cursor() as cur:
@@ -175,8 +220,8 @@ class EvictDBManager:
             if(len(case_obj["Name"]) > 79):
                 case_obj["Name"] = case_obj["Name"][0:79]
             cur.execute("""
-                INSERT INTO cases (case_id, case_num, case_name, file_date, case_status, status_date, type) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (case_id) DO UPDATE SET (type, status_date) = (excluded.type, excluded.status_date);
-            """, (case_id, case_obj["Number"], case_obj["Name"], case_obj["FileDate"], case_obj["Status"], case_obj["StatusDate"], case_obj["Type"]))
+                INSERT INTO cases (case_id, case_num, case_name, file_date, case_status, status_date, type, disp, disp_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (case_id) DO UPDATE SET (type, status_date, case_status) = (excluded.type, excluded.status_date, excluded.status_date);
+            """, (case_id, case_obj["Number"], case_obj["Name"], case_obj["FileDate"], case_obj["Status"], case_obj["StatusDate"], case_obj["Type"], case_obj["Disposition"], case_obj["DispositionDate"]))
             return True
     
     def add_event(self, case_id, event):

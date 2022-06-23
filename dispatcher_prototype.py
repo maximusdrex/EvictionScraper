@@ -36,6 +36,8 @@ if __name__ == '__main__':
     #print("Finished!!")
     #failed = [case for case in case_ids if not scraper.add_case(case)]
     #print(failed)
+    scraper.add_case("4221824")
+    exit()
     failed = []
     for case in case_ids:
         try:
@@ -46,7 +48,6 @@ if __name__ == '__main__':
             print("failure")
             failed.append(case)
     print(failed)
-    #scraper.add_case("4221824")
     print("Finished!!")
 
 
