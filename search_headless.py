@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from lxml import etree
 from lxml import html
 
-from db_prototype import EvictDBManager
+from db_nosql import EvictDBManager
 
 DEBUG_LEVEL = 1
 DEBUG_FILE = "search.log"

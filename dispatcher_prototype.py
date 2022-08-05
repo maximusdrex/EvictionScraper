@@ -1,21 +1,10 @@
-
-from db_prototype import EvictDBManager
+from db_nosql import EvictDBManager
 from scrape_prototype import Scraper
 from search_headless import HeadlessSearch
-import threading
-
-class ScrapeThread (threading.Thread):
-    def __init__(self, case):
-        threading.Thread.__init__(self)
-        self.case = case
-    def run(self):
-        print(self.case)
-        add_case(self.case)
-
 
 db = EvictDBManager()
 
-queries = ["2022-CVG-00{}*".format(i) for i in range(16,50)]
+queries = ["2022-CVG-00{}*".format(i) for i in range(16,56)]
 
 
 if __name__ == '__main__':
@@ -24,8 +13,8 @@ if __name__ == '__main__':
     #searcher = HeadlessSearch(queries, debug=2)
     #searcher.run()
 
-    #case_ids = db.get_new_cases()
-    case_ids = db.get_cases()
+    case_ids = db.get_new_cases()
+    #case_ids = db.get_cases()
 
     scraper = Scraper(2)
 
@@ -36,17 +25,16 @@ if __name__ == '__main__':
     #print("Finished!!")
     #failed = [case for case in case_ids if not scraper.add_case(case)]
     #print(failed)
-    scraper.add_case("4221824")
-    exit()
     failed = []
     for case in case_ids:
-        try:
-            success = scraper.add_case(case)
-        except:
-            print("{} failed".format(case))
-        if(not success): 
-            print("failure")
-            failed.append(case)
+        success = None
+        #try:
+        success = scraper.add_case(case)
+        #except:
+        #    print("{} failed".format(case))
+        #if(not success):
+        #    print("failure")
+        #    failed.append(case)
     print(failed)
     print("Finished!!")
 

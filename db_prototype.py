@@ -1,6 +1,6 @@
-import psycopg
+#import psycopg
 
-class EvictDBManager:
+#class EvictDBManager:
     def __init__(self):
         try:
             connection = psycopg.connect("dbname=EvictionDB user=postgres password=test123")
@@ -162,7 +162,8 @@ class EvictDBManager:
                 FROM events
                 WHERE events.description::text ~~ '%Move Out Scheduled%'::text;
 
-                CREATE OR REPLACE VIEW output_data AS SELECT case_properties.case_id,
+                CREATE OR REPLACE VIEW output_data AS SELECT 
+                    case_properties.case_id,
                     case_properties.case_num,
                     case_properties.file_date,
                     case_properties.case_status,
@@ -284,16 +285,38 @@ class EvictDBManager:
     def drop_tables(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-                DROP Table transactions;
-                drop table addresses;
-                drop table cases;
-                drop table events;
-                drop table hearings;
-                drop table finance;
-                drop table parties;
-                DROP TABLE searches;
+                DROP Table transactions CASCADE;
+                drop table hearings CASCADE;
+                drop table finance CASCADE;
+                drop table events CASCADE;
+                drop table addresses CASCADE;
+                drop table parties CASCADE;
+                drop table cases CASCADE;
+                DROP TABLE searches CASCADE;
             """)
         self.conn.commit()
+
+    def get_output(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM output_data;
+            """)
+            self.conn.commit()
+            return cur.fetchall()
+
+    def get_table_cols(self, table):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT column_name FROM information_schema.columns WHERE table_name=%s;
+            """, (table,))
+            self.conn.commit()
+            return cur.fetchall()
+    
+    def get_table(self, table):
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT * FROM {};".format(table))
+            self.conn.commit()
+            return cur.fetchall()
 
 db = EvictDBManager()
 db.create_tables()

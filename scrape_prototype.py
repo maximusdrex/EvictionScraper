@@ -1,11 +1,9 @@
-from asyncio import ProactorEventLoop
-from email.headerregistry import Address
 from multiprocessing import Event
 import requests
 import re
 import json
 
-from db_prototype import EvictDBManager
+from db_nosql import EvictDBManager
 
 
 INFO_URL = 'https://portal.cmcoh.org/app/RegisterOfActionsService/'
@@ -228,9 +226,8 @@ class Scraper:
                 db.add_address(case_id, party_id[0], party)
 
         print("added parties")
-        for party in Attorneys:
+        for party in Attorneys: 
             party_id = db.add_party(party, case_id, True)
-            print(party_id)
             ad = party.get("Address")
             if ad and party_id:
                 db.add_address(case_id, party_id[0], party)
