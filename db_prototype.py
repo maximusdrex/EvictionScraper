@@ -1,6 +1,6 @@
-#import psycopg
+import psycopg
 
-#class EvictDBManager:
+class EvictDBManager:
     def __init__(self):
         try:
             connection = psycopg.connect("dbname=EvictionDB user=postgres password=test123")

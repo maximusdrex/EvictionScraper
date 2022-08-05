@@ -44,13 +44,22 @@ class EvictDBManager:
     def create_tables(self):
         pass
 
-    def add_search(self, case):
-        print(case)
-        search = {"case_id": case["ID"], "case_num": case["Name"], "file_date": case["Date"], "status": "S"}
-        for key in search:
-            self.searches[key].append(search[key])
-        print(self.searches)
+    def add_search(self, case, u):
+        if(not u):
+            if (case["ID"] not in self.searches["case_id"]):
+                search = {"case_id": case["ID"], "case_num": case["Name"], "file_date": case["Date"], "status": "S"}
+                for key in search:
+                    self.searches[key].append(search[key])
+        else:
+            if (case["ID"] in self.searches["case_id"]):
+                i = self.searches["case_id"].index(case["ID"])
+                for key in self.searches:
+                    del self.searches[key][i]
+            search = {"case_id": case["ID"], "case_num": case["Name"], "file_date": case["Date"], "status": "S"}
+            for key in search:
+                self.searches[key].append(search[key])
 
+        
     def add_party(self, party, case_id, attorney):
         idn = 0
         if(len(self.parties["party_id"]) > 0):

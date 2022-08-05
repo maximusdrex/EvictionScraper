@@ -1,4 +1,3 @@
-from multiprocessing import Event
 import requests
 import re
 import json

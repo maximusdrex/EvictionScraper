@@ -1,4 +1,3 @@
-from cmath import log
 from time import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,10 +13,11 @@ DEBUG_LEVEL = 1
 DEBUG_FILE = "search.log"
 
 class HeadlessSearch:
-    def __init__(self, queries, debug=1, file="search.log"):
+    def __init__(self, queries, u=False, debug=1, file="search.log"):
         self.queries = queries
         self.debug = debug
         self.debug_file = file
+        self.u = u
         
 
     
@@ -124,7 +124,7 @@ class HeadlessSearch:
         db = EvictDBManager()
         for case in cases:
             #TODO:Add a status indicator for the dispatcher
-            db.add_search(case)
+            db.add_search(case, self.u)
         self.log(2, "Added cases from search to db")
         db.commit()
         db.close()
