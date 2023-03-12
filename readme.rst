@@ -6,8 +6,6 @@ Cleveland Municipal Court Eviction Case Scraper
 About
 --------------------------------------------
 
-OUT OF DATE
-
 This project scrapes data from eviciton cases in Cleveland from the court website.
 
 To get data from the website, first the the scraper searches for the unique ids of the cases, and then it uses the website's API to return the data. 
