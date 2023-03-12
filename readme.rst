@@ -17,9 +17,9 @@ Usage
 --------------
 
 If pip is installed, run pip install dist/evscraper-0.1.1-py3-none-any.whl. Then, the command ``evs`` will be installed. 
-Run ``evs`` with no arguments to continue the scraper from the last case it scraped. Run with a case id after the command ``evs case_id`` to start searching at the specified id.
+Run ``evs`` with no arguments to continue the scraper from the last case it scraped. Run with a case id after the command "``evs case_id``" to start searching at the specified id.
 
-To build any changes, run python -m build (if build in installed), and then reinstall the .whl file.
+To build any changes, run python -m build (if build is installed), and then reinstall the .whl file.
 
 To run without installing, simply run ``evs.py``.
 
