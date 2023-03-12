@@ -1,6 +1,6 @@
 import json
 
-from db_prototype import EvictDBManager
+from evscraper.db_prototype import EvictDBManager
 
 db = EvictDBManager()
 #output_columns = ["Case ID", "Case Number", "File Date", "Case Status", "Case Type", "Status Date", "Address", "City", "Zip", "Move Out", "Case Name"]

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evscraper"
+version = "0.1.1"
+dependencies = [
+    "requests",
+    "regex",
+]
+
+[project.scripts]
+evs = "evscraper.evs:run"

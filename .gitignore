@@ -5,3 +5,5 @@ __pycache__/
 Search Results_files/
 chromedriver.exe
 *.txt
+output/
+evscraper.egg-info

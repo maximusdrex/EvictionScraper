@@ -1,3 +1,11 @@
+################################
+# Eviction Scraper: Headless Scraper
+#   Scrapes the Cleveland Municipal Courts website using Selenium, searching for eviction cases 
+#   
+#   *BROKEN*, do not use, Cleveland Municipal Courts added Google reCaptcha service protecting search requests 
+#
+# Maxwell Schaefer (mrs314@case.edu)
+#################################
 from time import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options

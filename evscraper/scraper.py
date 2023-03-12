@@ -1,12 +1,21 @@
+################################
+# Eviction Scraper: Scraper
+#   Scrapes the Cleveland Municipal Courts website by making requests to its internal api and processing the responses 
+#   Gathers new cases by attempting all case numbers newer than the latest in the database, then checking if they are eviction cases
+# Maxwell Schaefer (mrs314@case.edu)
+#################################
 import requests
 import re
 import json
 
-from db_nosql import EvictDBManager
+from evscraper.db_nosql import EvictDBManager
 
-
+# This is the base url of all requests made by this scraper
+# The RegisterOfActionsService API is not protected by captcha and is the source for all necessary info
 INFO_URL = 'https://portal.cmcoh.org/app/RegisterOfActionsService/'
 
+# The CASE_INFO object holds the structure of all relevant requests, most are similarly structured and just need the id replaced
+# To make a request for one of these objects, just append the values of this object to the base url and replace the case id
 CASE_INFO= {
     "CaseSummary":"CaseSummariesSlim?key={id}",
     "CombinedEvents":"CombinedEvents(\'{id}\')",
@@ -23,8 +32,13 @@ CASE_INFO= {
     "Charges":"Charges(\'{id}\')",
 }
 
-#case_id = 4246831
+#This constant is how many cases it will take to decide that the final case has been reached
+#There are gaps in the data since cases can be removed, I haven't encountered more than 3-4 at once
+#however, I set it high as a precautionary measure. It does take time though so lowering this may speed
+#up the serach process if searching is repeated often
+MAX_COUNT = 100
 
+# Scraper Class definition
 class Scraper:
     def __init__(self, debug=1, file="scrape.log"):
         self.debug_level = debug
@@ -60,6 +74,36 @@ class Scraper:
             except:
                 return "NONE"
 
+    # Search for new cases
+    def search(self, start_num=0):
+        db = EvictDBManager()
+        if(start_num == 0):
+            id = db.get_max_case()
+        else:
+            id = start_num
+        last_id = 0
+        count = 0
+        while(count < MAX_COUNT):
+            id+=1
+            temp = self.get_info(self.get_api_key(id), CASE_INFO["CaseSummary"])
+            if(temp != "NONE"):
+                count = 0
+                last_id = id
+                try:
+                    if(temp["CaseInformation"]["CaseType"]["Word"] == "CVGHE"):
+                        new_case = {"ID": id, "Name": temp["CaseSummaryHeader"]["CaseNumber"], "Date": temp["CaseSummaryHeader"]["FiledOn"]}
+                        print("id {} is eviction, adding {}".format(id, new_case["Name"]))
+                        db.add_search(new_case, False)
+                except:
+                    self.log(2, "error case {}".format(id))
+            else:
+                count += 1
+        if(last_id > 0):
+            print("Final id: {}".format(last_id))
+        db.commit()
+    
+
+
     #TODO: split up into better functions (works for now though)
     def add_case(self, case_id):
         api_key = self.get_api_key(case_id)
@@ -67,7 +111,6 @@ class Scraper:
             self.log(1, "Couldn't get API key")
             return False
         
-
         print("\n\n")
         data = {}
         for key in CASE_INFO:
@@ -80,6 +123,10 @@ class Scraper:
 
         print("\n\n")
         Hearings_Raw = [x for x in data["CombinedEvents"]["Events"] if x["Type"]=="HearingEvent"]
+
+        print(Hearings_Raw)
+        print("\n\n")
+
 
         #Parse Hearings, extracts date/time, event type, event result, judge desc, and stores raw json
         Hearings = [{"Datetime":x["HearingTime"], "EventType":x["EventType"], "json":json.dumps(x)} for x in Hearings_Raw]
@@ -94,6 +141,8 @@ class Scraper:
             except:
                 Hearings[i]["Result"] = None
                 print("No Result")
+        
+        print(Hearings)
 
 
         Events_Raw = [x for x in data["CombinedEvents"]["Events"] if x["Type"]!="HearingEvent"]
@@ -261,4 +310,5 @@ class Scraper:
 
 if __name__=='__main__':
     scraper = Scraper(debug=3)
-    scraper.add_case("2021-CVG-000143")
+    scraper.search()
+        
