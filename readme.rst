@@ -1,9 +1,9 @@
 ============================================
-# Cleveland Municipal Court Eviction Case Scraper
+Cleveland Municipal Court Eviction Case Scraper
 ============================================
 
 --------------------------------------------
-## About
+About
 --------------------------------------------
 
 OUT OF DATE
@@ -13,7 +13,7 @@ This project scrapes data from eviciton cases in Cleveland from the court websit
 To get data from the website, first the the scraper searches for the unique ids of the cases, and then it uses the website's API to return the data. 
 
 --------------
-## Usage
+Usage
 --------------
 
 If pip is installed, run pip install dist/evscraper-0.1.1-py3-none-any.whl. Then, the command ``evs`` will be installed. 
@@ -24,7 +24,7 @@ To build any changes, run python -m build (if build in installed), and then rein
 To run without installing, simply run ``evs.py``.
 
 --------------
-## TODO:
+TODO:
 --------------
 [x] Reverse engineer the searching API so that headless browsing is no longer necessary
 [] Retry failed case scrapes
