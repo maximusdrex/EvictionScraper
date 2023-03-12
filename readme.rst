@@ -27,7 +27,11 @@ To run without installing, simply run ``evs.py``.
 TODO:
 --------------
 [x] Reverse engineer the searching API so that headless browsing is no longer necessary
+
 [] Retry failed case scrapes
+
 [] Increasing logging readability
+
 [] Use multithreading to scrape data to increase speed
+
 [] Handle user input during scrape to allow pausing/resuming
